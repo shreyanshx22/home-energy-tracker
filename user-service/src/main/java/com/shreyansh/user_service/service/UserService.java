@@ -2,6 +2,7 @@ package com.shreyansh.user_service.service;
 
 import com.shreyansh.user_service.dto.UserDto;
 import com.shreyansh.user_service.entity.User;
+import com.shreyansh.user_service.exception.UserNotFoundException;
 import com.shreyansh.user_service.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,12 +48,12 @@ public class UserService {
     public UserDto getUserById(Long id) {
         return userRepository.findById(id)
                 .map(this::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
     }
 
     public void updateUser(Long id, UserDto dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
 
         user.setName(dto.getName());
         user.setSurname(dto.getSurname());
@@ -66,7 +67,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("User not found"));
+                .orElseThrow(()-> new UserNotFoundException("User not found with id " + id));
         userRepository.delete(user);
     }
 }
